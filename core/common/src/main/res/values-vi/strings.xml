@@ -47,7 +47,7 @@
     <string name="parsing_index_error_DESC">Không thể phân tích cú pháp tệp chỉ mục.</string>
     <string name="permissions">Quyền</string>
     <string name="plus_more_FORMAT">+%d nhiều hơn</string>
-    <string name="settings">Thiết đặt</string>
+    <string name="settings">Cài đặt</string>
     <string name="project_website">Website của dự án</string>
     <string name="promotes_non_free_software">Thúc đẩy phần mềm không tự do</string>
     <string name="provided_by_FORMAT">Cung cấp bởi %s</string>
@@ -198,7 +198,7 @@
     <string name="material_you_desc">Sử dụng chủ đề màu Material You</string>
     <string name="auto_update">Tự động cập nhật ứng dụng</string>
     <string name="auto_update_apps">Cố gắng cài đặt các bản cập nhật tự động</string>
-    <string name="installing">Đang cài đặt</string>
+    <string name="installing">Cài đặt</string>
     <string name="waiting_to_start_installation">Đang đợi để bắt đầu cài đặt…</string>
     <string name="favourites">Yêu thích</string>
     <string name="force_clean_up">Buộc dọn dẹp</string>
@@ -218,23 +218,15 @@
     <string name="repository_not_found">Không tìm thấy kho lưu trữ sau</string>
     <string name="special_credits">Công trạng đặc biệt</string>
     <string name="shizuku_not_installed">Shizuku chưa được cài đặt</string>
-    <string name="import_settings_title">Nhập thiết đặt</string>
+    <string name="import_settings_title">Nhập cài đặt</string>
     <string name="import_export">Nhập/Xuất</string>
-    <string name="import_settings_DESC">Nhập thiết đặt và mục yêu thích từ tệp</string>
-    <string name="export_settings_title">Xuất thiết đặt</string>
+    <string name="import_settings_DESC">Nhập cài đặt và mục yêu thích từ tệp</string>
+    <string name="export_settings_title">Xuất cài đặt</string>
     <string name="export_repos_DESC">Xuất mọi kho lưu trữ sang tệp</string>
     <string name="import_repos_title">Nhập kho lưu trữ</string>
-    <string name="export_settings_DESC">Xuất thiết đặt và mục yêu thích sang tệp</string>
+    <string name="export_settings_DESC">Xuất cài đặt và mục yêu thích sang tệp</string>
     <string name="export_repos_title">Xuất kho lưu trữ</string>
     <string name="import_repos_DESC">Nhập mọi kho lưu trữ từ tệp</string>
     <string name="cannot_open_link">Không thể mở liên kết</string>
     <string name="has_tethered_network">Bị ràng buộc với một dịch vụ mạng nhất định</string>
-    <string name="require_background_access">Yêu cầu quyền truy cập nền</string>
-    <string name="require_background_access_DESC">Cần có quyền truy cập nền để chạy đồng bộ hóa nền đúng cách</string>
-    <string name="installation_failed_DESC">Không cài đặt được %s</string>
-    <string name="uninstalled_application">Đã gỡ cài đặt</string>
-    <string name="installation_failed">Cài đặt thất bại</string>
-    <string name="ignore_signature">Bỏ qua chữ ký</string>
-    <string name="uninstalled_application_DESC">%s đã được gỡ cài đặt</string>
-    <string name="ignore_signature_summary">Bỏ qua xác minh chữ ký khi cài đặt apk, đối với người dùng LSPosed hoặc người dùng nâng cao</string>
 </resources>

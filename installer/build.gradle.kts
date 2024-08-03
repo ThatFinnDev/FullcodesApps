@@ -6,14 +6,21 @@ plugins {
 
 android {
     namespace = "com.looker.installer"
+
+    buildTypes {
+        release {
+            isMinifyEnabled = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
+        }
+        create("alpha") {
+            initWith(getByName("debug"))
+            isMinifyEnabled = true
+        }
+    }
 }
 
 dependencies {
-    modules(
-        Modules.coreCommon,
-        Modules.coreDatastore,
-        Modules.coreDomain,
-    )
+    modules(Modules.coreCommon, Modules.coreDatastore)
 
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.guava)

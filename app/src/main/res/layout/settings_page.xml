@@ -40,7 +40,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingStart="@dimen/shape_margin_large"
-                android:paddingEnd="@dimen/shape_margin_large"
                 android:paddingTop="@dimen/shape_margin_large"
                 android:text="@string/prefs_personalization"
                 android:textAppearance="?textAppearanceHeadlineSmall"
@@ -76,7 +75,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingStart="@dimen/shape_margin_large"
-                android:paddingEnd="@dimen/shape_margin_large"
                 android:text="@string/updates"
                 android:textAppearance="?textAppearanceHeadlineSmall"
                 android:textColor="?colorPrimary"
@@ -103,18 +101,14 @@
                 layout="@layout/switch_type" />
 
             <include
-                android:id="@+id/ignore_signature"
-                layout="@layout/switch_type" />
-
-            <include
                 android:id="@+id/incompatible_updates"
-                layout="@layout/switch_type" />
+                layout="@layout/switch_type"
+                android:visibility="gone" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingStart="@dimen/shape_margin_large"
-                android:paddingEnd="@dimen/shape_margin_large"
                 android:text="@string/proxy"
                 android:textAppearance="?textAppearanceHeadlineSmall"
                 android:textColor="?colorPrimary"
@@ -136,7 +130,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingStart="@dimen/shape_margin_large"
-                android:paddingEnd="@dimen/shape_margin_large"
                 android:text="@string/install_types"
                 android:textAppearance="?textAppearanceHeadlineSmall"
                 android:textColor="?colorPrimary"
@@ -150,33 +143,36 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingStart="@dimen/shape_margin_large"
-                android:paddingEnd="@dimen/shape_margin_large"
                 android:text="@string/import_export"
                 android:textAppearance="?textAppearanceHeadlineSmall"
                 android:textColor="?colorPrimary"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="gone" />
 
             <include
                 android:id="@+id/export_settings"
-                layout="@layout/enum_type" />
+                layout="@layout/switch_type"
+                android:visibility="gone" />
 
             <include
                 android:id="@+id/import_settings"
-                layout="@layout/enum_type" />
+                layout="@layout/switch_type"
+                android:visibility="gone" />
 
             <include
                 android:id="@+id/export_repos"
-                layout="@layout/enum_type" />
+                layout="@layout/switch_type"
+                android:visibility="gone" />
 
             <include
                 android:id="@+id/import_repos"
-                layout="@layout/enum_type" />
+                layout="@layout/switch_type"
+                android:visibility="gone" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingStart="@dimen/shape_margin_large"
-                android:paddingEnd="@dimen/shape_margin_large"
                 android:text="@string/credits"
                 android:textAppearance="?textAppearanceHeadlineSmall"
                 android:textColor="?colorPrimary"

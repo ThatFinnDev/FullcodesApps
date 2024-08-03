@@ -19,4 +19,3 @@ local.properties
 /core-datastore/build/
 /app/release/
 /app/alpha/
-/.kotlin/

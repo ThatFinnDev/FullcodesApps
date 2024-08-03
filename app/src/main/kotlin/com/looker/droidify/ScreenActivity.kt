@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -18,11 +17,13 @@ import com.looker.core.common.SdkCheck
 import com.looker.core.common.deeplinkType
 import com.looker.core.common.extension.homeAsUp
 import com.looker.core.common.extension.inputManager
+import com.looker.core.common.requestBatteryFreedom
 import com.looker.core.common.requestNotificationPermission
 import com.looker.core.datastore.SettingsRepository
 import com.looker.core.datastore.extension.getThemeRes
 import com.looker.core.datastore.get
 import com.looker.droidify.database.CursorOwner
+import com.looker.droidify.ui.ScreenFragment
 import com.looker.droidify.ui.appDetail.AppDetailFragment
 import com.looker.droidify.ui.favourites.FavouritesFragment
 import com.looker.droidify.ui.repository.EditRepositoryFragment
@@ -70,8 +71,6 @@ abstract class ScreenActivity : AppCompatActivity() {
 
     lateinit var cursorOwner: CursorOwner
         private set
-
-    private var onBackPressedCallback: OnBackPressedCallback? = null
 
     private val fragmentStack = mutableListOf<FragmentStackItem>()
 
@@ -158,7 +157,6 @@ abstract class ScreenActivity : AppCompatActivity() {
             window.navigationBarColor = resources.getColor(android.R.color.transparent, theme)
             WindowCompat.setDecorFitsSystemWindows(window, false)
         }
-        backHandler()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -166,20 +164,14 @@ abstract class ScreenActivity : AppCompatActivity() {
         outState.putParcelableArrayList(STATE_FRAGMENT_STACK, ArrayList(fragmentStack))
     }
 
-    private fun backHandler() {
-        if (onBackPressedCallback == null) {
-            onBackPressedCallback = object : OnBackPressedCallback(enabled = false) {
-                override fun handleOnBackPressed() {
-                    hideKeyboard()
-                    popFragment()
-                }
+    override fun onBackPressed() {
+        val currentFragment = currentFragment
+        if (!(currentFragment is ScreenFragment && currentFragment.onBackPressed())) {
+            hideKeyboard()
+            if (!popFragment()) {
+                super.onBackPressed()
             }
-            onBackPressedDispatcher.addCallback(
-                this,
-                onBackPressedCallback!!,
-            )
         }
-        onBackPressedCallback?.isEnabled = fragmentStack.isNotEmpty()
     }
 
     private fun replaceFragment(fragment: Fragment, open: Boolean?) {
@@ -210,7 +202,6 @@ abstract class ScreenActivity : AppCompatActivity() {
             )
         }
         replaceFragment(fragment, true)
-        backHandler()
     }
 
     private fun popFragment(): Boolean {
@@ -220,7 +211,6 @@ abstract class ScreenActivity : AppCompatActivity() {
             stackItem.arguments?.let(fragment::setArguments)
             stackItem.savedState?.let(fragment::setInitialSavedState)
             replaceFragment(fragment, false)
-            backHandler()
             true
         }
     }
@@ -232,11 +222,11 @@ abstract class ScreenActivity : AppCompatActivity() {
     internal fun onToolbarCreated(toolbar: Toolbar) {
         if (fragmentStack.isNotEmpty()) {
             toolbar.navigationIcon = toolbar.context.homeAsUp
-            toolbar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
+            toolbar.setNavigationOnClickListener { onBackPressed() }
         }
     }
 
-    override fun onNewIntent(intent: Intent) {
+    override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         handleIntent(intent)
     }
@@ -250,7 +240,6 @@ abstract class ScreenActivity : AppCompatActivity() {
                 }
                 val tabsFragment = currentFragment as TabsFragment
                 tabsFragment.selectUpdates()
-                backHandler()
             }
 
             is SpecialIntent.Install -> {

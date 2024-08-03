@@ -9,11 +9,11 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import com.looker.core.common.PackageName
 import com.looker.core.common.SdkCheck
 import com.looker.core.common.cache.Cache
 import com.looker.core.common.log
 import com.looker.core.common.sdkAbove
-import com.looker.core.domain.model.PackageName
 import com.looker.installer.installers.Installer
 import com.looker.installer.model.InstallItem
 import com.looker.installer.model.InstallState
@@ -23,7 +23,7 @@ import kotlin.coroutines.resume
 internal class SessionInstaller(private val context: Context) : Installer {
 
     private val installer = context.packageManager.packageInstaller
-    private val intent = Intent(context, SessionInstallerReceiver::class.java)
+    private val intent = Intent(context, SessionInstallerService::class.java)
 
     companion object {
         private var installerCallbacks: PackageInstaller.SessionCallback? = null
@@ -73,7 +73,7 @@ internal class SessionInstaller(private val context: Context) : Installer {
                 }
             }
 
-            val pendingIntent = PendingIntent.getBroadcast(context, id, intent, flags)
+            val pendingIntent = PendingIntent.getService(context, id, intent, flags)
 
             if (cont.isActive) activeSession.commit(pendingIntent.intentSender)
         }
@@ -90,14 +90,14 @@ internal class SessionInstaller(private val context: Context) : Installer {
     @SuppressLint("MissingPermission")
     override suspend fun uninstall(packageName: PackageName) =
         suspendCancellableCoroutine { cont ->
-            intent.putExtra(SessionInstallerReceiver.ACTION_UNINSTALL, true)
-            val pendingIntent = PendingIntent.getBroadcast(context, -1, intent, flags)
+            intent.putExtra(SessionInstallerService.ACTION_UNINSTALL, true)
+            val pendingIntent = PendingIntent.getService(context, -1, intent, flags)
 
             installer.uninstall(packageName.name, pendingIntent.intentSender)
             cont.resume(Unit)
         }
 
-    override fun close() {
+    override fun cleanup() {
         installerCallbacks?.let {
             installer.unregisterSessionCallback(it)
             installerCallbacks = null

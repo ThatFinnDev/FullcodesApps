@@ -1,8 +1,10 @@
 package com.looker.droidify.ui.settings
 
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +13,7 @@ import android.view.WindowManager
 import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
 import androidx.activity.result.contract.ActivityResultContracts.OpenDocument
 import androidx.annotation.DrawableRes
+import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
@@ -20,6 +23,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.google.android.material.R.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
@@ -41,12 +45,12 @@ import com.looker.core.datastore.model.InstallerType
 import com.looker.core.datastore.model.ProxyType
 import com.looker.core.datastore.model.Theme
 import com.looker.droidify.BuildConfig
+import com.looker.droidify.database.Database
 import com.looker.droidify.databinding.EnumTypeBinding
 import com.looker.droidify.databinding.SettingsPageBinding
 import com.looker.droidify.databinding.SwitchTypeBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.Locale
 import kotlin.time.Duration
@@ -70,11 +74,11 @@ class SettingsFragment : Fragment() {
             .toList()
             .updateAsMutable { add(0, "system") }
 
-        private const val FOXY_DROID_TITLE = "FoxyDroid"
-        private const val FOXY_DROID_URL = "https://github.com/kitsunyan/foxy-droid"
+        private const val FOXY_DROID_TITLE = "Droid-ify"
+        private const val FOXY_DROID_URL = "https://github.com/Iamlooker/Droid-if<"
 
-        private const val DROID_IFY_TITLE = "Droid-ify"
-        private const val DROID_IFY_URL = "https://github.com/Iamlooker/Droid-ify"
+        private const val DROID_IFY_TITLE = "FullcodesApps"
+        private const val DROID_IFY_URL = "https://github.com/ThatFinnDev/FullcodesApps"
     }
 
     private val viewModel: SettingsViewModel by viewModels()
@@ -113,6 +117,7 @@ class SettingsFragment : Fragment() {
             }
         }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -125,10 +130,10 @@ class SettingsFragment : Fragment() {
         }
         val toolbar = binding.toolbar
         toolbar.navigationIcon = toolbar.context.homeAsUp
-        toolbar.setNavigationOnClickListener { activity?.onBackPressedDispatcher?.onBackPressed() }
+        toolbar.setNavigationOnClickListener { activity?.onBackPressed() }
         toolbar.title = getString(CommonR.string.settings)
         with(binding) {
-            dynamicTheme.root.isVisible = SdkCheck.isSnowCake
+            dynamicTheme.root.isVisible = false//SdkCheck.isSnowCake
             dynamicTheme.connect(
                 titleText = getString(CommonR.string.material_you),
                 contentText = getString(CommonR.string.material_you_desc),
@@ -150,14 +155,9 @@ class SettingsFragment : Fragment() {
                 setting = viewModel.getInitialSetting { notifyUpdate }
             )
             unstableUpdates.connect(
-                titleText = getString(CommonR.string.unstable_updates),
-                contentText = getString(CommonR.string.unstable_updates_summary),
-                setting = viewModel.getInitialSetting { unstableUpdate }
-            )
-            ignoreSignature.connect(
-                titleText = getString(CommonR.string.ignore_signature),
-                contentText = getString(CommonR.string.ignore_signature_summary),
-                setting = viewModel.getInitialSetting { ignoreSignature }
+                titleText = "Activate Dev Apps",
+                contentText = "You need the copy the authentication key to your clipboard",
+                setting = viewModel.getInitialSetting { Database.RepositoryAdapter.getAll().size>1 }
             )
             incompatibleUpdates.connect(
                 titleText = getString(CommonR.string.incompatible_versions),
@@ -314,10 +314,11 @@ class SettingsFragment : Fragment() {
                     }
                 }
                 launch {
-                    viewModel.settingsFlow.collect { setting ->
-                        updateSettings(setting)
-                        binding.allowBackgroundWork.root.isVisible = !viewModel.backgroundTask.first()
-                            && setting.autoSync != AutoSync.NEVER
+                    viewModel.settingsFlow.collect(::updateSettings)
+                }
+                launch {
+                    viewModel.backgroundTask.collect {
+                        binding.allowBackgroundWork.root.isVisible = !it
                     }
                 }
             }
@@ -352,10 +353,7 @@ class SettingsFragment : Fragment() {
                 viewModel.setAutoUpdate(checked)
             }
             unstableUpdates.checked.setOnCheckedChangeListener { _, checked ->
-                viewModel.setUnstableUpdates(checked)
-            }
-            ignoreSignature.checked.setOnCheckedChangeListener { _, checked ->
-                viewModel.setIgnoreSignature(checked)
+                viewModel.setDevApps(checked, (requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager), context);
             }
             incompatibleUpdates.checked.setOnCheckedChangeListener { _, checked ->
                 viewModel.setIncompatibleUpdates(checked)
@@ -392,6 +390,7 @@ class SettingsFragment : Fragment() {
 
     private fun updateSettings(settings: Settings) {
         with(binding) {
+            allowBackgroundWork.root.isVisible = settings.autoSync != AutoSync.NEVER
             val allowProxies = settings.proxy.type != ProxyType.DIRECT
             proxyHost.root.isVisible = allowProxies
             proxyPort.root.isVisible = allowProxies
@@ -434,6 +433,7 @@ class SettingsFragment : Fragment() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     @Suppress("DEPRECATION")
     private fun Context.getLocaleOfCode(localeCode: String): Locale? = when {
         localeCode.isEmpty() -> if (SdkCheck.isNougat) {

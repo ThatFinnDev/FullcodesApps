@@ -25,7 +25,6 @@ data class Settings(
     val incompatibleVersions: Boolean = false,
     val notifyUpdate: Boolean = true,
     val unstableUpdate: Boolean = false,
-    val ignoreSignature: Boolean = false,
     val theme: Theme = Theme.SYSTEM,
     val dynamicTheme: Boolean = false,
     val installerType: InstallerType = InstallerType.Default,
@@ -36,7 +35,7 @@ data class Settings(
     val cleanUpInterval: Duration = 12.hours,
     val lastCleanup: Instant? = null,
     val favouriteApps: Set<String> = emptySet(),
-    val homeScreenSwiping: Boolean = true,
+    val homeScreenSwiping: Boolean = true
 )
 
 @OptIn(ExperimentalSerializationApi::class)

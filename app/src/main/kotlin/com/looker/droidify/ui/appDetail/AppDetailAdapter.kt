@@ -32,18 +32,13 @@ import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.snackbar.Snackbar
-import com.looker.network.DataSize
+import com.looker.core.common.DataSize
 import com.looker.core.common.extension.*
 import com.looker.core.common.formatSize
 import com.looker.core.common.nullIfEmpty
+import com.looker.core.domain.*
 import com.looker.droidify.R
 import com.looker.droidify.content.ProductPreferences
-import com.looker.droidify.model.InstalledItem
-import com.looker.droidify.model.Product
-import com.looker.droidify.model.ProductPreference
-import com.looker.droidify.model.Release
-import com.looker.droidify.model.Repository
-import com.looker.droidify.model.findSuggested
 import com.looker.droidify.utility.PackageItemResolver
 import com.looker.droidify.utility.extension.ImageUtils.icon
 import com.looker.droidify.utility.extension.android.Android
@@ -570,8 +565,8 @@ class AppDetailAdapter(private val callbacks: Callbacks) :
                 setPadding(20.dp, 20.dp, 20.dp, 20.dp)
                 val imageView = ImageView(context)
                 val bitmap = Bitmap.createBitmap(
-                    64.dp.dpToPx.roundToInt(),
-                    32.dp.dpToPx.roundToInt(),
+                    64.dp.px.roundToInt(),
+                    32.dp.px.roundToInt(),
                     Bitmap.Config.ARGB_8888
                 )
                 val canvas = Canvas(bitmap)
@@ -592,8 +587,8 @@ class AppDetailAdapter(private val callbacks: Callbacks) :
                     background = context.corneredBackground
                     setPadding(0, 12.dp, 0, 12.dp)
                 }
-                val waveHeight = 2.dp.dpToPx
-                val waveWidth = 12.dp.dpToPx
+                val waveHeight = 2.dp.px
+                val waveWidth = 12.dp.px
                 with(canvas) {
                     val linePaint = Paint().apply {
                         color = context.getColorFromAttr(MaterialR.attr.colorOutline).defaultColor

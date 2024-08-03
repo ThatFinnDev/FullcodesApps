@@ -28,12 +28,12 @@ import com.looker.core.common.extension.isFirstItemVisible
 import com.looker.core.common.extension.isSystemApplication
 import com.looker.core.common.extension.systemBarsPadding
 import com.looker.core.common.extension.updateAsMutable
-import com.looker.droidify.model.InstalledItem
-import com.looker.droidify.model.Product
-import com.looker.droidify.model.ProductPreference
-import com.looker.droidify.model.Release
-import com.looker.droidify.model.Repository
-import com.looker.droidify.model.findSuggested
+import com.looker.core.domain.InstalledItem
+import com.looker.core.domain.Product
+import com.looker.core.domain.ProductPreference
+import com.looker.core.domain.Release
+import com.looker.core.domain.Repository
+import com.looker.core.domain.findSuggested
 import com.looker.droidify.content.ProductPreferences
 import com.looker.droidify.service.Connection
 import com.looker.droidify.service.DownloadService
@@ -449,6 +449,10 @@ class AppDetailFragment() : ScreenFragment(), AppDetailAdapter.Callbacks {
 
     override fun onReleaseClick(release: Release) {
         val installedItem = installed?.installedItem
+        var denyDowngrade : Boolean = true
+        if(viewModel.packageName.contains(".dev"))
+            denyDowngrade = false
+
         when {
             release.incompatibilities.isNotEmpty() -> {
                 MessageDialog(
@@ -461,39 +465,31 @@ class AppDetailFragment() : ScreenFragment(), AppDetailAdapter.Callbacks {
                 ).show(childFragmentManager)
             }
 
-            installedItem != null && installedItem.versionCode > release.versionCode -> {
+            denyDowngrade && (installedItem != null && installedItem.versionCode > release.versionCode) -> {
                 MessageDialog(Message.ReleaseOlder).show(childFragmentManager)
             }
 
             installedItem != null && installedItem.signature != release.signature -> {
-                lifecycleScope.launch {
-                    if (viewModel.shouldIgnoreSignature()) {
-                        queueReleaseInstall(release, installedItem)
-                    } else {
-                        MessageDialog(Message.ReleaseSignatureMismatch).show(childFragmentManager)
-                    }
-                }
+                MessageDialog(Message.ReleaseSignatureMismatch).show(
+                    childFragmentManager
+                )
             }
 
             else -> {
-                queueReleaseInstall(release, installedItem)
+                val productRepository =
+                    products.asSequence().filter { (product, _) ->
+                        product.releases.any { it === release }
+                    }.firstOrNull()
+                if (productRepository != null) {
+                    downloadConnection.binder?.enqueue(
+                        viewModel.packageName,
+                        productRepository.first.name,
+                        productRepository.second,
+                        release,
+                        installedItem != null
+                    )
+                }
             }
-        }
-    }
-
-    private fun queueReleaseInstall(release: Release, installedItem: InstalledItem?) {
-        val productRepository =
-            products.asSequence().filter { (product, _) ->
-                product.releases.any { it === release }
-            }.firstOrNull()
-        if (productRepository != null) {
-            downloadConnection.binder?.enqueue(
-                viewModel.packageName,
-                productRepository.first.name,
-                productRepository.second,
-                release,
-                installedItem != null
-            )
         }
     }
 

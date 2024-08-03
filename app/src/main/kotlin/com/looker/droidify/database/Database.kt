@@ -16,10 +16,10 @@ import com.looker.core.common.extension.parseDictionary
 import com.looker.core.common.extension.writeDictionary
 import com.looker.core.common.log
 import com.looker.core.datastore.model.SortOrder
-import com.looker.droidify.model.InstalledItem
-import com.looker.droidify.model.Product
-import com.looker.droidify.model.ProductItem
-import com.looker.droidify.model.Repository
+import com.looker.core.domain.InstalledItem
+import com.looker.core.domain.Product
+import com.looker.core.domain.ProductItem
+import com.looker.core.domain.Repository
 import com.looker.droidify.BuildConfig
 import com.looker.droidify.utility.serialization.product
 import com.looker.droidify.utility.serialization.productItem
@@ -47,7 +47,7 @@ object Database {
         val helper = Helper(context)
         db = helper.writableDatabase
         if (helper.created) {
-            for (repository in Repository.defaultRepositories.sortedBy { it.name }) {
+            for (repository in Repository.defaultRepositories) {
                 RepositoryAdapter.put(repository)
             }
         }
@@ -184,7 +184,7 @@ object Database {
         }
     }
 
-    private class Helper(context: Context) : SQLiteOpenHelper(context, "droidify", null, 4) {
+    private class Helper(context: Context) : SQLiteOpenHelper(context, "droidify", null, 3) {
         var created = false
             private set
         var updated = false

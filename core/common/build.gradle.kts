@@ -10,6 +10,17 @@ android {
     defaultConfig {
         vectorDrawables.useSupportLibrary = true
     }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
+        }
+        create("alpha") {
+            initWith(getByName("debug"))
+            isMinifyEnabled = true
+        }
+    }
     buildFeatures {
         buildConfig = true
     }
@@ -18,10 +29,10 @@ android {
 dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.android.material)
-    implementation(libs.androidx.activity)
+    implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.viewModel)
+    implementation(libs.androidx.lifecycle.viewModel.ktx)
     implementation(libs.androidx.recyclerview)
     implementation(libs.coil.kt)
     implementation(libs.jackson.core)

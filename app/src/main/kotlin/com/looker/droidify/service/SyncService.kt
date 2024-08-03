@@ -1,6 +1,8 @@
 package com.looker.droidify.service
 
 import android.annotation.SuppressLint
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.job.JobInfo
 import android.app.job.JobParameters
@@ -16,24 +18,23 @@ import android.view.ContextThemeWrapper
 import androidx.core.app.NotificationCompat
 import androidx.fragment.app.Fragment
 import com.looker.core.common.Constants
+import com.looker.core.common.DataSize
 import com.looker.core.common.SdkCheck
-import com.looker.core.common.createNotificationChannel
 import com.looker.core.common.extension.getColorFromAttr
 import com.looker.core.common.extension.notificationManager
+import com.looker.core.common.extension.percentBy
 import com.looker.core.common.extension.startSelf
 import com.looker.core.common.extension.stopForegroundCompat
 import com.looker.core.common.result.Result
 import com.looker.core.common.sdkAbove
 import com.looker.core.datastore.SettingsRepository
+import com.looker.core.domain.ProductItem
+import com.looker.core.domain.Repository
 import com.looker.droidify.BuildConfig
 import com.looker.droidify.MainActivity
 import com.looker.droidify.database.Database
 import com.looker.droidify.index.RepositoryUpdater
-import com.looker.droidify.model.ProductItem
-import com.looker.droidify.model.Repository
 import com.looker.droidify.utility.extension.startUpdate
-import com.looker.network.DataSize
-import com.looker.network.percentBy
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -197,15 +198,21 @@ class SyncService : ConnectionService<SyncService.Binder>() {
     override fun onCreate() {
         super.onCreate()
 
-        createNotificationChannel(
-            id = Constants.NOTIFICATION_CHANNEL_SYNCING,
-            name = getString(stringRes.syncing),
-        )
-        createNotificationChannel(
-            id = Constants.NOTIFICATION_CHANNEL_UPDATES,
-            name = getString(stringRes.updates),
-        )
-
+        sdkAbove(Build.VERSION_CODES.O) {
+            val channels = listOf(
+                NotificationChannel(
+                    Constants.NOTIFICATION_CHANNEL_SYNCING,
+                    getString(stringRes.syncing),
+                    NotificationManager.IMPORTANCE_LOW
+                ).apply { setShowBadge(false) },
+                NotificationChannel(
+                    Constants.NOTIFICATION_CHANNEL_UPDATES,
+                    getString(stringRes.updates),
+                    NotificationManager.IMPORTANCE_LOW
+                )
+            )
+            notificationManager?.createNotificationChannels(channels)
+        }
         downloadConnection.bind(this)
         lifecycleScope.launch {
             syncState

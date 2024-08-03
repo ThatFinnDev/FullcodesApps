@@ -12,7 +12,6 @@ import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
 import android.widget.TextView
-import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -36,10 +35,9 @@ import com.looker.core.common.extension.getMutatedIcon
 import com.looker.core.common.extension.selectableBackground
 import com.looker.core.common.extension.systemBarsPadding
 import com.looker.core.common.sdkAbove
-import com.looker.core.data.fdroid.sync.workers.SyncWorker
 import com.looker.core.datastore.extension.sortOrderName
 import com.looker.core.datastore.model.SortOrder
-import com.looker.droidify.model.ProductItem
+import com.looker.core.domain.ProductItem
 import com.looker.droidify.R
 import com.looker.droidify.databinding.TabsToolbarBinding
 import com.looker.droidify.service.Connection
@@ -59,13 +57,6 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class TabsFragment : ScreenFragment() {
-
-    enum class BackAction {
-        ProductAll,
-        CollapseSearchView,
-        HideSections,
-        None,
-    }
 
     private var _tabsBinding: TabsToolbarBinding? = null
     private val tabsBinding get() = _tabsBinding!!
@@ -90,17 +81,16 @@ class TabsFragment : ScreenFragment() {
     private var searchMenuItem: MenuItem? = null
     private var sortOrderMenu: Pair<MenuItem, List<MenuItem>>? = null
     private var syncRepositoriesMenuItem: MenuItem? = null
+    private var settingsMenuItem: MenuItem? = null
     private var layout: Layout? = null
     private var sectionsList: RecyclerView? = null
     private var sectionsAdapter: SectionsAdapter? = null
     private var viewPager: ViewPager2? = null
-    private var onBackPressedCallback: OnBackPressedCallback? = null
 
     private var showSections = false
         set(value) {
             if (field != value) {
                 field = value
-                viewModel.showSections.value = value
                 val layout = layout
                 layout?.tabs?.let {
                     (0 until it.childCount)
@@ -190,23 +180,11 @@ class TabsFragment : ScreenFragment() {
                 .setShowAsActionFlags(
                     MenuItem.SHOW_AS_ACTION_ALWAYS or MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW
                 )
-                .setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
-                    override fun onMenuItemActionExpand(item: MenuItem): Boolean {
-                        viewModel.isSearchActionItemExpanded.value = true
-                        return true
-                    }
-
-                    override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
-                        viewModel.isSearchActionItemExpanded.value = false
-                        return true
-                    }
-                })
 
             syncRepositoriesMenuItem = add(0, 0, 0, stringRes.sync_repositories)
                 .setIcon(toolbar.context.getMutatedIcon(CommonR.drawable.ic_sync))
                 .setOnMenuItemClickListener {
-                    SyncWorker.startSyncWork(requireContext())
-//                    syncConnection.binder?.sync(SyncService.SyncRequest.MANUAL)
+                    syncConnection.binder?.sync(SyncService.SyncRequest.MANUAL)
                     true
                 }
 
@@ -225,6 +203,7 @@ class TabsFragment : ScreenFragment() {
                     Pair(menu.item, menuItems)
                 }
 
+                /*
             favouritesItem = add(1, 0, 0, stringRes.favourites)
                 .setIcon(
                     toolbar.context.getMutatedIcon(CommonR.drawable.ic_favourite_checked)
@@ -239,8 +218,10 @@ class TabsFragment : ScreenFragment() {
                     view.post { screenActivity.navigateRepositories() }
                     true
                 }
+                */
 
-            add(1, 0, 0, stringRes.settings)
+            settingsMenuItem = add(0, 0, 0, stringRes.settings)
+                .setIcon(toolbar.context.getMutatedIcon(CommonR.drawable.ic_tune))
                 .setOnMenuItemClickListener {
                     view.post { screenActivity.navigatePreferences() }
                     true
@@ -294,11 +275,6 @@ class TabsFragment : ScreenFragment() {
                         viewPager?.isUserInputEnabled = it
                     }
                 }
-                launch {
-                    viewModel.backAction.collect {
-                        onBackPressedCallback?.isEnabled = it != BackAction.None
-                    }
-                }
             }
         }
 
@@ -345,17 +321,6 @@ class TabsFragment : ScreenFragment() {
                 }
             }
         }
-        onBackPressedCallback = object : OnBackPressedCallback(enabled = false) {
-            override fun handleOnBackPressed() {
-                performOnBackPressed()
-            }
-        }
-        onBackPressedCallback?.let {
-            requireActivity().onBackPressedDispatcher.addCallback(
-                viewLifecycleOwner,
-                it,
-            )
-        }
     }
 
     override fun onDestroyView() {
@@ -365,6 +330,7 @@ class TabsFragment : ScreenFragment() {
         searchMenuItem = null
         sortOrderMenu = null
         syncRepositoriesMenuItem = null
+        settingsMenuItem = null
         layout = null
         sectionsList = null
         sectionsAdapter = null
@@ -375,7 +341,6 @@ class TabsFragment : ScreenFragment() {
         sectionsAnimator = null
 
         _tabsBinding = null
-        onBackPressedCallback = null
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -396,22 +361,25 @@ class TabsFragment : ScreenFragment() {
         }
     }
 
-    private fun performOnBackPressed() {
-        when(viewModel.backAction.value) {
-            BackAction.ProductAll -> {
+    override fun onBackPressed(): Boolean {
+        return when {
+            viewModel.currentSection.value != ProductItem.Section.All -> {
                 viewModel.setSection(ProductItem.Section.All)
+                true
             }
 
-            BackAction.CollapseSearchView -> {
+            searchMenuItem?.isActionViewExpanded == true -> {
                 searchMenuItem?.collapseActionView()
+                true
             }
 
-            BackAction.HideSections -> {
+            showSections -> {
                 showSections = false
+                true
             }
 
-            BackAction.None -> {
-                // should never be called
+            else -> {
+                super.onBackPressed()
             }
         }
     }
@@ -542,6 +510,7 @@ class TabsFragment : ScreenFragment() {
                 )
             }
             syncRepositoriesMenuItem!!.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS)
+            settingsMenuItem!!.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS)
             if (showSections && !source.sections) {
                 showSections = false
             }

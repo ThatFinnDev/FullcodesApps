@@ -7,20 +7,17 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
-import coil.dispose
 import coil.load
-import coil.size.Dimension
 import coil.size.Scale
 import com.google.android.material.imageview.ShapeableImageView
 import com.looker.core.common.extension.aspectRatio
 import com.looker.core.common.extension.authentication
 import com.looker.core.common.extension.camera
 import com.looker.core.common.extension.dp
-import com.looker.core.common.extension.dpToPx
 import com.looker.core.common.extension.getColorFromAttr
 import com.looker.core.common.extension.selectableBackground
-import com.looker.droidify.model.Product
-import com.looker.droidify.model.Repository
+import com.looker.core.domain.Product
+import com.looker.core.domain.Repository
 import com.looker.droidify.graphics.PaddingDrawable
 import com.looker.droidify.utility.extension.ImageUtils.url
 import com.looker.droidify.widget.StableRecyclerAdapter
@@ -53,8 +50,7 @@ class ScreenshotsAdapter(private val onClick: (Product.Screenshot, ImageView) ->
 
         init {
             with(image) {
-                layout(0, 0, 0, 0)
-                adjustViewBounds = true
+                layout(0,0,0,0)
                 shapeAppearanceModel = imageShapeModel
                 background = context.selectableBackground
                 isFocusable = true
@@ -110,21 +106,14 @@ class ScreenshotsAdapter(private val onClick: (Product.Screenshot, ImageView) ->
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         holder as ViewHolder
         val item = items[position]
-        with(holder.image) {
-            load(item.screenshot.url(item.repository, item.packageName)) {
-                size(Dimension.Undefined, Dimension(150.dp.dpToPx.toInt()))
-                scale(Scale.FIT)
-                placeholder(holder.placeholder)
-                error(holder.placeholder)
-                authentication(item.repository.authentication)
-            }
+        holder.image.load(
+            item.screenshot.url(item.repository, item.packageName)
+        ) {
+            scale(Scale.FILL)
+            placeholder(holder.placeholder)
+            error(holder.placeholder)
+            authentication(item.repository.authentication)
         }
-    }
-
-    override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
-        super.onViewRecycled(holder)
-        holder as ViewHolder
-        holder.image.dispose()
     }
 
     private sealed class Item {

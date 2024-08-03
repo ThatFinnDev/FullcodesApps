@@ -17,7 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.looker.core.common.extension.getColorFromAttr
 import com.looker.core.common.extension.systemBarsPadding
-import com.looker.droidify.model.Repository
+import com.looker.core.domain.Repository
 import com.looker.droidify.databinding.RepositoryPageBinding
 import com.looker.droidify.ui.Message
 import com.looker.droidify.ui.MessageDialog
@@ -162,7 +162,7 @@ class RepositoryFragment() : ScreenFragment() {
 
     internal fun onDeleteConfirm() {
         viewModel.deleteRepository(
-            onDelete = { requireActivity().onBackPressedDispatcher.onBackPressed() }
+            onDelete = { requireActivity().onBackPressed() }
         )
     }
 }

@@ -4,7 +4,6 @@ object DefaultConfig {
     const val appId = "com.looker.droidify"
     const val compileSdk = 34
     const val minSdk = 23
-    // Check for TODOs before update
-    const val versionCode = 630
-    const val versionName = "0.6.3"
+    const val versionCode = 2
+    const val versionName = "0.0.2"
 }

@@ -6,9 +6,9 @@ import com.looker.core.database.model.CategoryEntity
 import com.looker.core.database.model.PackageEntity
 import com.looker.core.database.model.PermissionEntity
 import com.looker.core.database.model.RepoEntity
-import com.looker.sync.fdroid.v2.model.PackageV2
-import com.looker.sync.fdroid.v2.model.RepoV2
-import com.looker.sync.fdroid.v2.model.VersionV2
+import org.fdroid.index.v2.PackageV2
+import org.fdroid.index.v2.PackageVersionV2
+import org.fdroid.index.v2.RepoV2
 
 fun PackageV2.toEntity(
     packageName: String,
@@ -29,9 +29,9 @@ fun PackageV2.toEntity(
         name = metadata.name ?: emptyMap(),
         authorName = metadata.authorName ?: "",
         authorEmail = metadata.authorEmail ?: "",
-        authorWebSite = metadata.authorWebsite ?: "",
+        authorWebSite = metadata.authorWebSite ?: "",
         donate = metadata.donate.firstOrNull() ?: "",
-        liberapayID = metadata.liberapay ?: "",
+        liberapayID = metadata.liberapayID ?: "",
         liberapay = metadata.liberapay ?: "",
         openCollective = metadata.openCollective ?: "",
         bitcoin = metadata.bitcoin ?: "",
@@ -58,7 +58,7 @@ fun PackageV2.toEntity(
         promoGraphic = metadata.promoGraphic?.mapValues { it.value.name } ?: emptyMap(),
         tvBanner = metadata.tvBanner?.mapValues { it.value.name } ?: emptyMap(),
         video = metadata.video ?: emptyMap(),
-        packages = versions.values.map(VersionV2::toPackage).checkUnstable(
+        packages = versions.values.map(PackageVersionV2::toPackage).checkUnstable(
             allowUnstable,
             versions.values.firstOrNull()?.manifest?.versionCode ?: -1
         )
@@ -71,9 +71,9 @@ private fun List<PackageEntity>.checkUnstable(
     allowUnstable || (suggestedVersionCode > 0L && it.versionCode >= suggestedVersionCode)
 }
 
-fun VersionV2.toPackage(): PackageEntity = PackageEntity(
+fun PackageVersionV2.toPackage(): PackageEntity = PackageEntity(
     added = added,
-    hash = file.sha256!!,
+    hash = file.sha256,
     features = manifest.features.map { it.name },
     apkName = file.name,
     hashType = "SHA-256",

@@ -239,12 +239,4 @@
     <string name="import_repos_DESC">Импортировать все репозитории из файла</string>
     <string name="cannot_open_link">Невозможно открыть ссылку</string>
     <string name="has_tethered_network">Привязка к определённой сетевой службе</string>
-    <string name="require_background_access_DESC">Для правильной работы фоновой синхронизации требуется разрешение на работу в фоне</string>
-    <string name="require_background_access">Требуется фоновый доступ</string>
-    <string name="ignore_signature">Игнорировать подпись</string>
-    <string name="ignore_signature_summary">Игнорировать проверку подписи при установке APK, для пользователей LSPosed или продвинутых пользователей</string>
-    <string name="installation_failed">Установка не выполнена</string>
-    <string name="uninstalled_application_DESC">%s удалено</string>
-    <string name="installation_failed_DESC">Невозможно установить %s</string>
-    <string name="uninstalled_application">Удалено</string>
 </resources>

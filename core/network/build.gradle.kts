@@ -1,25 +1,28 @@
 plugins {
-    alias(libs.plugins.looker.jvm.library)
+    alias(libs.plugins.looker.android.library)
     alias(libs.plugins.looker.hilt)
     alias(libs.plugins.looker.lint)
 }
 
-dependencies {
-    modules(Modules.coreDI)
-    implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.ktor.core)
-    implementation(libs.ktor.okhttp)
-    testImplementation(platform(libs.junit.bom))
-    testImplementation(libs.junit.jupiter)
-    testImplementation(libs.ktor.mock)
-    testImplementation(libs.kotlinx.coroutines.test)
-    testImplementation(kotlin("test"))
-    testRuntimeOnly(libs.junit.platform)
+android {
+    namespace = "com.looker.network"
+
+    buildTypes {
+        release {
+            isMinifyEnabled = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
+        }
+        create("alpha") {
+            initWith(getByName("debug"))
+            isMinifyEnabled = true
+        }
+    }
 }
 
-tasks.test {
-    useJUnitPlatform()
-    testLogging {
-        events("passed", "skipped", "failed")
-    }
+dependencies {
+    modules(Modules.coreCommon)
+
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.ktor.core)
+    implementation(libs.ktor.okhttp)
 }

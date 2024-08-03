@@ -1,13 +1,15 @@
 package com.looker.installer
 
 import android.content.Context
+import com.looker.core.common.Constants
+import com.looker.core.common.PackageName
 import com.looker.core.common.extension.addAndCompute
 import com.looker.core.common.extension.filter
+import com.looker.core.common.extension.notificationManager
 import com.looker.core.common.extension.updateAsMutable
 import com.looker.core.datastore.SettingsRepository
 import com.looker.core.datastore.get
 import com.looker.core.datastore.model.InstallerType
-import com.looker.core.domain.model.PackageName
 import com.looker.installer.installers.Installer
 import com.looker.installer.installers.LegacyInstaller
 import com.looker.installer.installers.root.RootInstaller
@@ -26,6 +28,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
+// TODO: Fix the stuck state, and other installer
 class InstallManager(
     private val context: Context,
     settingsRepository: SettingsRepository
@@ -38,7 +41,7 @@ class InstallManager(
 
     private var _installer: Installer? = null
         set(value) {
-            field?.close()
+            field?.cleanup()
             field = value
         }
     private val installer: Installer get() = _installer!!
@@ -85,10 +88,13 @@ class InstallManager(
         }.consumeEach { item ->
             if (state.value.containsKey(item.packageName)) {
                 updateState { put(item.packageName, InstallState.Installing) }
-                val success = installer.use {
-                    it.install(item)
-                }
+                val success = installer.install(item)
+                installer.cleanup()
                 updateState { put(item.packageName, success) }
+                context.notificationManager?.cancel(
+                    "download-${item.packageName.name}",
+                    Constants.NOTIFICATION_ID_DOWNLOADING
+                )
                 currentQueue.remove(item.packageName.name)
             }
         }

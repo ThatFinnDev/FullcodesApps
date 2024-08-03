@@ -106,10 +106,6 @@
     <string name="shizuku_not_installed">Shizuku is not installed</string>
     <string name="installed">Installed</string>
     <string name="installing">Installing</string>
-    <string name="installation_failed">Installation Failed</string>
-    <string name="installation_failed_DESC">Failed to install %s</string>
-    <string name="uninstalled_application">Uninstalled</string>
-    <string name="uninstalled_application_DESC">%s has been uninstalled</string>
     <string name="integrity_check_error_DESC">Could not check integrity.</string>
     <string name="invalid_address">Invalid address</string>
     <string name="invalid_fingerprint_format">Invalid fingerprint format</string>
@@ -217,8 +213,6 @@
     <string name="unsigned">Unsigned</string>
     <string name="unstable_updates">Unstable updates</string>
     <string name="unstable_updates_summary">Suggest installing unstable versions</string>
-    <string name="ignore_signature">Ignore Signature</string>
-    <string name="ignore_signature_summary">Ignore signature verification when installing apk, for LSPosed users or advanced users</string>
     <string name="unverified">Unverified</string>
     <string name="update">Update</string>
     <string name="updates">Updates</string>

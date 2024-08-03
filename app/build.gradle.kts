@@ -9,10 +9,63 @@ android {
     namespace = "com.looker.droidify"
     defaultConfig {
         vectorDrawables.useSupportLibrary = true
-    }
-
-    androidResources {
-        generateLocaleConfig = true
+        applicationId = "at.FullCodes.apps"
+        resourceConfigurations += mutableListOf(
+            /* locale list begin */
+            "ar",
+            "az",
+            "be",
+            "bg",
+            "bn",
+            "ca",
+            "cs",
+            "da",
+            "de",
+            "el",
+            "eo",
+            "es",
+            "fa",
+            "fi",
+            "fr",
+            "gl",
+            "hi",
+            "hr",
+            "hu",
+            "ia",
+            "in",
+            "it",
+            "iw",
+            "ja",
+            "kn",
+            "ko",
+            "lt",
+            "lv",
+            "ml",
+            "ms",
+            "nb-rNO",
+            "nl",
+            "nn",
+            "or",
+            "pa",
+            "pl",
+            "pt",
+            "pt-rBR",
+            "ro",
+            "ru",
+            "ryu",
+            "si",
+            "sl",
+            "sr",
+            "sv",
+            "tl",
+            "tr",
+            "uk",
+            "ur",
+            "vi",
+            "zh-rCN",
+            "zh-rTW"
+            /* locale list end */
+        )
     }
 
     sourceSets.forEach { source ->
@@ -25,12 +78,12 @@ android {
     buildTypes {
         getByName("debug") {
             applicationIdSuffix = ".debug"
-            resValue("string", "application_name", "Droid-ify-Debug")
+            resValue("string", "application_name", "Fullcodes-Apps-Debug")
         }
         getByName("release") {
             isMinifyEnabled = true
             isShrinkResources = true
-            resValue("string", "application_name", "Droid-ify")
+            resValue("string", "application_name", "Fullcodes-Apps")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard.pro"
@@ -39,7 +92,7 @@ android {
         create("alpha") {
             initWith(getByName("debug"))
             applicationIdSuffix = ".alpha"
-            resValue("string", "application_name", "Droid-ify Alpha")
+            resValue("string", "application_name", "Fullcodes-Apps Alpha")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard.pro"
@@ -69,7 +122,6 @@ android {
         }
     }
     buildFeatures {
-        resValues = true
         viewBinding = true
         buildConfig = true
     }
@@ -79,20 +131,19 @@ dependencies {
 
     modules(
         Modules.coreDomain,
-        Modules.coreData,
         Modules.coreCommon,
         Modules.coreNetwork,
         Modules.coreDatastore,
         Modules.coreDI,
-        Modules.installer,
+        Modules.installer
     )
 
     implementation(libs.android.material)
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.activity)
+    implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.fragment.ktx)
-    implementation(libs.androidx.lifecycle.viewModel)
+    implementation(libs.androidx.lifecycle.viewModel.ktx)
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.sqlite.ktx)
     implementation(libs.coil.kt)
@@ -100,6 +151,4 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.jackson.core)
     implementation(libs.image.viewer)
-
-//    debugImplementation(libs.leakcanary)
 }

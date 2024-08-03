@@ -1,7 +1,7 @@
 package com.looker.installer.model
 
-import com.looker.core.domain.model.PackageName
-import com.looker.core.domain.model.toPackageName
+import com.looker.core.common.PackageName
+import com.looker.core.common.toPackageName
 
 data class InstallItem(
     val packageName: PackageName,
